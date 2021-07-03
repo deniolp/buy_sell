@@ -55,7 +55,7 @@ const PictureRestrict = {
 
 const getPictureFileName = (number) => `item${number.toString().padStart(2, 0)}.jpg`;
 
-const generateOffers = (count) => {
+const generateOffers = (count) => (
   Array(count).fill({}).map(() => ({
     category: [CATEGORIES[utils.getRandomNumber(0, CATEGORIES.length - 1)]],
     description: utils.shuffle(SENTENCES).slice(1, 5).join(` `),
@@ -63,15 +63,15 @@ const generateOffers = (count) => {
     title: TITLES[utils.getRandomNumber(0, TITLES.length - 1)],
     type: OfferType[Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)]],
     sum: utils.getRandomNumber(SumRestrict.MIN, SumRestrict.MAX)
-  }));
-};
+  }))
+);
 
 module.exports = {
   name: `--generate`,
   async run(args) {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const content = JSON.stringify(generateOffers(countOffer));
+    const content = JSON.stringify(generateOffers(countOffer), null, 2);
 
     try {
       await fs.writeFile(FILE_NAME, content);
