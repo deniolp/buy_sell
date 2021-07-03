@@ -1,0 +1,17 @@
+{
+  "name": "buy_sell",
+  "version": "1.0.0",
+  "description": "\"Buy. Sell\"",
+  "main": "./src/service/service.js",
+  "scripts": {
+    "test": "npm run eslint",
+    "eslint": "eslint --ext .js src/",
+    "start": "node ./src/service/service.js"
+  },
+  "author": "Denis Popov",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "7.30.0",
+    "eslint-config-htmlacademy": "0.6.0"
+  }
+}
