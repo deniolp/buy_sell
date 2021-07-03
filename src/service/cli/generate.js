@@ -4,6 +4,10 @@ const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 
 const utils = require(`./../utils`);
+const {
+  MAX_DATA_COUNT,
+  ExitCode
+} = require(`./../../constants`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
@@ -70,6 +74,10 @@ module.exports = {
   name: `--generate`,
   async run(args) {
     const [count] = args;
+    if (count >= MAX_DATA_COUNT) {
+      console.log(chalk.red(`Не больше 1000 объявлений`));
+      process.exit(ExitCode.error);
+    }
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
     const content = JSON.stringify(generateOffers(countOffer), null, 2);
 
@@ -78,6 +86,7 @@ module.exports = {
       console.log(chalk.green(`Operation success. File created.`));
     } catch (error) {
       console.error(chalk.red(`Can't write data to file...`));
+      process.exit(ExitCode.error);
     }
   }
 };
