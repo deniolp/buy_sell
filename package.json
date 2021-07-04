@@ -7,7 +7,7 @@
     "test": "npm run eslint",
     "eslint": "eslint --ext .js src/",
     "start": "node ./src/service/service.js",
-    "start.dev": "nodemon ./src/service/service.js --server"
+    "server": "nodemon ./src/service/service.js --server"
   },
   "author": "Denis Popov",
   "license": "ISC",
@@ -15,5 +15,8 @@
     "eslint": "7.30.0",
     "eslint-config-htmlacademy": "0.6.0",
     "nodemon": "2.0.9"
+  },
+  "dependencies": {
+    "express": "4.17.1"
   }
 }
