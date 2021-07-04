@@ -6,41 +6,12 @@ const chalk = require(`chalk`);
 const utils = require(`./../utils`);
 const {
   MAX_DATA_COUNT,
-  ExitCode
+  ExitCode,
+  TXT_FILES_DIR
 } = require(`./../../constants`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
-
-const TITLES = [
-  `Продам книги Стивена Кинга`,
-  `Продам новую приставку Sony Playstation 5`,
-  `Продам отличную подборку фильмов на VHS`,
-  `Куплю антиквариат`,
-  `Куплю породистого кота`,
-];
-
-const SENTENCES = [
-  `Товар в отличном состоянии.`,
-  `Пользовались бережно и только по большим праздникам.`,
-  `Продаю с болью в сердце...`,
-  `Бонусом отдам все аксессуары.`,
-  `Даю недельную гарантию.`,
-  `Если товар не понравится — верну всё до последней копейки.`,
-  `Это настоящая находка для коллекционера!`,
-  `Если найдёте дешевле — сброшу цену.`,
-  `Таких предложений больше нет!`,
-  `При покупке с меня бесплатная доставка в черте города.`,
-];
-
-const CATEGORIES = [
-  `Книги`,
-  `Разное`,
-  `Посуда`,
-  `Игры`,
-  `Животные`,
-  `Журналы`,
-];
 
 const OfferType = {
   OFFER: `offer`,
@@ -59,12 +30,39 @@ const PictureRestrict = {
 
 const getPictureFileName = (number) => `item${number.toString().padStart(2, 0)}.jpg`;
 
-const generateOffers = (count) => (
+const readContent = async (fileName) => {
+  try {
+    const content = await fs.readFile(`./data/${fileName}.txt`, `utf8`);
+    const contentArray = content.split(`\n`);
+    contentArray.pop();
+    return contentArray;
+  } catch (err) {
+    console.error(chalk.red(`Can't read file ${fileName}.`));
+    return [];
+  }
+};
+
+const makeMockData = async (files) => {
+  let mockData = {};
+  try {
+    for (const file of files) {
+      const fileName = file.split(`.`)[0];
+      const data = await readContent(fileName);
+      mockData[fileName] = data;
+    }
+    return mockData;
+  } catch (error) {
+    console.error(chalk.red(`Can't create mock data.`));
+    return mockData;
+  }
+};
+
+const generateOffers = (count, mockData) => (
   Array(count).fill({}).map(() => ({
-    category: [CATEGORIES[utils.getRandomNumber(0, CATEGORIES.length - 1)]],
-    description: utils.shuffle(SENTENCES).slice(1, 5).join(` `),
+    category: utils.shuffle(mockData.categories).slice(0, utils.getRandomNumber(1, mockData.categories.length - 1)),
+    description: utils.shuffle(mockData.sentences).slice(1, 5).join(` `),
     picture: getPictureFileName(utils.getRandomNumber(PictureRestrict.MIN, PictureRestrict.MAX)),
-    title: TITLES[utils.getRandomNumber(0, TITLES.length - 1)],
+    title: mockData.titles[utils.getRandomNumber(0, mockData.titles.length - 1)],
     type: OfferType[Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)]],
     sum: utils.getRandomNumber(SumRestrict.MIN, SumRestrict.MAX)
   }))
@@ -79,7 +77,9 @@ module.exports = {
       process.exit(ExitCode.error);
     }
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const content = JSON.stringify(generateOffers(countOffer), null, 2);
+    const files = await fs.readdir(TXT_FILES_DIR);
+    const mockData = await makeMockData(files);
+    const content = JSON.stringify(generateOffers(countOffer, mockData), null, 2);
 
     try {
       await fs.writeFile(FILE_NAME, content);
