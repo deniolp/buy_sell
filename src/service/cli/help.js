@@ -8,6 +8,7 @@ module.exports = {
     const text = `
     Гайд:
       Команды:
+      --server <port>       запускает http-сервер
       --version:            выводит номер версии
       --help:               печатает этот текст
       --generate <count>    формирует файл mocks.json
