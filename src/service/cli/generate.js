@@ -2,12 +2,15 @@
 
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
+const {nanoid} = require(`nanoid`);
 
 const utils = require(`./../utils`);
 const {
   MAX_DATA_COUNT,
   ExitCode,
-  TXT_FILES_DIR
+  TXT_FILES_DIR,
+  MAX_ID_LENGTH,
+  MAX_COMMENTS,
 } = require(`./../../constants`);
 
 const DEFAULT_COUNT = 1;
@@ -57,14 +60,25 @@ const makeMockData = async (files) => {
   }
 };
 
+const generateComments = (count, comments) => (
+  Array(count).fill({}).map(() => ({
+    id: nanoid(MAX_ID_LENGTH),
+    text: utils.shuffle(comments)
+      .slice(0, utils.getRandomNumber(1, 3))
+      .join(` `),
+  }))
+);
+
 const generateOffers = (count, mockData) => (
   Array(count).fill({}).map(() => ({
+    id: nanoid(MAX_ID_LENGTH),
     category: utils.shuffle(mockData.categories).slice(0, utils.getRandomNumber(1, mockData.categories.length - 1)),
     description: utils.shuffle(mockData.sentences).slice(1, 5).join(` `),
     picture: getPictureFileName(utils.getRandomNumber(PictureRestrict.MIN, PictureRestrict.MAX)),
     title: mockData.titles[utils.getRandomNumber(0, mockData.titles.length - 1)],
     type: OfferType[Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)]],
-    sum: utils.getRandomNumber(SumRestrict.MIN, SumRestrict.MAX)
+    sum: utils.getRandomNumber(SumRestrict.MIN, SumRestrict.MAX),
+    comments: generateComments(utils.getRandomNumber(1, MAX_COMMENTS), mockData.comments)
   }))
 );
 

@@ -3,7 +3,7 @@
 const express = require(`express`);
 const chalk = require(`chalk`);
 
-const offersRoutes = require(`../routes/offers`);
+const offersRoutes = require(`../api/offers`);
 
 const DEFAULT_PORT = 3000;
 
