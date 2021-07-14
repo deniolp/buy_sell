@@ -16,7 +16,8 @@
     "verbose": true,
     "setupFilesAfterEnv": [
       "jest-extended"
-    ]
+    ],
+    "testPathIgnorePatterns": ["src/lessons"]
   },
   "devDependencies": {
     "eslint": "7.30.0",
