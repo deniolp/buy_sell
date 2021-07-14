@@ -11,6 +11,8 @@ head
       pointer-events: none;
     }
 body
+  mixin ticketLabel(type)
+    span(class!=attributes.class || `ticket-card__label`) #{type === `OFFER` ? `Куплю` : `Продам`}
   include partials/header.pug
   block content
   include partials/footer.pug

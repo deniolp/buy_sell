@@ -2,10 +2,14 @@
 
 const {Router} = require(`express`);
 
-const mainRouter = new Router();
+const {getAPI} = require(`../api`);
 
-mainRouter.get(`/`, (req, res) => {
-  res.render(`main`, {});
+const mainRouter = new Router();
+const api = getAPI();
+
+mainRouter.get(`/`, async (req, res) => {
+  const offers = await api.getOffers();
+  res.render(`main`, {offers});
 });
 mainRouter.get(`/register`, (req, res) => {
   res.render(`register`, {});
