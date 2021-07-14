@@ -10,7 +10,9 @@
     "start": "cross-env NODE_ENV=production nodemon ./src/service/service.js --server",
     "start::debug": "cross-env NODE_ENV=development COLOR=true nodemon ./src/service/service.js --server",
     "start-front-server": "cross-env NODE_ENV=production IS_FRONT=true nodemon ./src/express/index.js",
-    "start-front-server::debug": "cross-env NODE_ENV=development COLOR=true IS_FRONT=true nodemon ./src/express/index.js"
+    "start-front-server::debug": "cross-env NODE_ENV=development COLOR=true IS_FRONT=true nodemon ./src/express/index.js",
+    "dev": "concurrently \"npm run start\" \"npm run start-front-server\"",
+    "dev::debug": "concurrently \"npm run start::debug\" \"npm run start-front-server::debug\""
   },
   "author": "Denis Popov",
   "license": "ISC",
@@ -19,9 +21,12 @@
     "setupFilesAfterEnv": [
       "jest-extended"
     ],
-    "testPathIgnorePatterns": ["src/lessons"]
+    "testPathIgnorePatterns": [
+      "src/lessons"
+    ]
   },
   "devDependencies": {
+    "concurrently": "6.2.0",
     "eslint": "7.30.0",
     "eslint-config-htmlacademy": "0.6.0",
     "jest": "27.0.6",
@@ -39,6 +44,6 @@
     "multer": "1.4.2",
     "nanoid": "3.1.23",
     "pino": "6.11.3",
-    "pug": "3.0.2"
+    "pug": "2.0.4"
   }
 }
