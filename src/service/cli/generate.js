@@ -1,10 +1,10 @@
 'use strict';
 
 const fs = require(`fs`).promises;
-const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
 
 const utils = require(`./../utils`);
+const {getLogger} = require(`../lib/logger`);
 const {
   MAX_DATA_COUNT,
   ExitCode,
@@ -40,7 +40,7 @@ const readContent = async (fileName) => {
     contentArray.pop();
     return contentArray;
   } catch (err) {
-    console.error(chalk.red(`Can't read file ${fileName}.`));
+    logger.error(`Can't read file ${fileName}.`);
     return [];
   }
 };
@@ -55,7 +55,7 @@ const makeMockData = async (files) => {
     }
     return mockData;
   } catch (error) {
-    console.error(chalk.red(`Can't create mock data.`));
+    logger.error(`Can't create mock data.`);
     return mockData;
   }
 };
@@ -82,12 +82,14 @@ const generateOffers = (count, mockData) => (
   }))
 );
 
+const logger = getLogger({name: `generate`});
+
 module.exports = {
   name: `--generate`,
   async run(args) {
     const [count] = args;
     if (count >= MAX_DATA_COUNT) {
-      console.log(chalk.red(`Не больше 1000 объявлений`));
+      logger.error(`Не больше 1000 объявлений`);
       process.exit(ExitCode.error);
     }
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
@@ -97,9 +99,9 @@ module.exports = {
 
     try {
       await fs.writeFile(FILE_NAME, content);
-      console.log(chalk.green(`Operation success. File created.`));
+      logger.info(`Operation success. File created.`);
     } catch (error) {
-      console.error(chalk.red(`Can't write data to file...`));
+      logger.error(`Can't write data to file...`);
       process.exit(ExitCode.error);
     }
   }
