@@ -27,7 +27,10 @@ const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+const ensureArray = (value) => Array.isArray(value) ? value : [value];
+
 module.exports = {
   shuffle,
-  getRandomNumber
+  getRandomNumber,
+  ensureArray
 };
