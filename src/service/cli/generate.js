@@ -11,54 +11,15 @@ const {
   TXT_FILES_DIR,
   MAX_ID_LENGTH,
   MAX_COMMENTS,
+  OfferType,
+  SumRestrict,
+  PictureRestrict
 } = require(`./../../constants`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
 
-const OfferType = {
-  OFFER: `offer`,
-  SALE: `sale`,
-};
-
-const SumRestrict = {
-  MIN: 1000,
-  MAX: 100000,
-};
-
-const PictureRestrict = {
-  MIN: 1,
-  MAX: 16,
-};
-
 const getPictureFileName = (number) => `item${number.toString().padStart(2, 0)}.jpg`;
-
-const readContent = async (fileName) => {
-  try {
-    const content = await fs.readFile(`./data/${fileName}.txt`, `utf8`);
-    const contentArray = content.split(`\n`);
-    contentArray.pop();
-    return contentArray;
-  } catch (err) {
-    logger.error(`Can't read file ${fileName}.`);
-    return [];
-  }
-};
-
-const makeMockData = async (files) => {
-  let mockData = {};
-  try {
-    for (const file of files) {
-      const fileName = file.split(`.`)[0];
-      const data = await readContent(fileName);
-      mockData[fileName] = data;
-    }
-    return mockData;
-  } catch (error) {
-    logger.error(`Can't create mock data.`);
-    return mockData;
-  }
-};
 
 const generateComments = (count, comments) => (
   Array(count).fill({}).map(() => ({
@@ -94,7 +55,7 @@ module.exports = {
     }
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
     const files = await fs.readdir(TXT_FILES_DIR);
-    const mockData = await makeMockData(files);
+    const mockData = await utils.makeMockData(files);
     const content = JSON.stringify(generateOffers(countOffer, mockData), null, 2);
 
     try {

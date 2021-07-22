@@ -11,6 +11,22 @@ module.exports.ExitCode = {
   error: 1,
   success: 0,
 };
+
+module.exports.OfferType = {
+  offer: `offer`,
+  buy: `buy`,
+};
+
+module.exports.SumRestrict = {
+  min: 1000,
+  max: 100000,
+};
+
+module.exports.PictureRestrict = {
+  min: 1,
+  max: 16,
+};
+
 module.exports.HttpCode = {
   OK: 200,
   CREATED: 201,
