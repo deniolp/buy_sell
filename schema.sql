@@ -31,11 +31,11 @@ DROP TABLE IF EXISTS users;
 DROP TYPE IF EXISTS offer_type;
 
 CREATE TABLE users(
-  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  email varchar(255) UNIQUE NOT NULL,
-  password varchar(255) NOT NULL CHECK (char_length(password) > 6),
+  id bigserial PRIMARY KEY NOT NULL,
   first_name varchar(255) NOT NULL,
   last_name varchar(255) NOT NULL,
+  email varchar(255) UNIQUE NOT NULL,
+  password varchar(50) NOT NULL CHECK (char_length(password) > 6),
   avatar varchar(50) NOT NULL
 );
 
@@ -44,11 +44,11 @@ CREATE TYPE offer_type AS ENUM ('buy', 'offer');
 SET datestyle = "ISO, DMY";
 
 CREATE TABLE offers(
-  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  id bigserial PRIMARY KEY NOT NULL,
+  type offer_type NOT NULL,
   title varchar(255) NOT NULL,
   description text NOT NULL,
   sum integer NOT NULL,
-  type offer_type NOT NULL,
   picture varchar(50),
   user_id integer NOT NULL,
   created_date timestamp DEFAULT current_timestamp,
@@ -62,15 +62,16 @@ CREATE INDEX title_index ON offers ((lower(title)));
 CREATE INDEX offer_created_date_index ON offers (created_date);
 
 CREATE TABLE categories(
-  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  title varchar(255) NOT NULL
+  id bigserial PRIMARY KEY NOT NULL,
+  title varchar(255) NOT NULL,
+  picture character varying(500)
 );
 
 CREATE TABLE comments(
-  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  offer_id integer NOT NULL,
-  user_id integer NOT NULL,
+  id bigserial PRIMARY KEY NOT NULL,
   text text NOT NULL,
+  user_id integer NOT NULL,
+  offer_id integer NOT NULL,
   created_date timestamp DEFAULT current_timestamp,
   CONSTRAINT comments_users FOREIGN KEY (user_id)
     REFERENCES users (id) MATCH FULL
