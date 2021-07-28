@@ -13,6 +13,7 @@ node_modules/
 src/lessons/
 src/express/upload
 mocks.json
+.env
 
 # Папка с собранными файлами проекта
 build/
