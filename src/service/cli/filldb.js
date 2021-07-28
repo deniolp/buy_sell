@@ -17,6 +17,22 @@ const {
   PictureRestrict
 } = require(`./../../constants`);
 
+const users = [
+  {
+    firstName: `Иван`,
+    lastName: `Иванов`,
+    email: `arteta@gmail.com`,
+    password: `qwertyss`,
+    avatar: `image.jpg`,
+  },
+  {
+    firstName: `Сергей`,
+    lastName: `Сидоров`,
+    email: `barguzin@gmail.com`,
+    password: `qwertyss`,
+    avatar: `image2.jpg`,
+  }
+];
 const DEFAULT_COUNT = 1;
 
 const logger = getLogger({name: `filldb`});
@@ -28,6 +44,7 @@ const generateComments = (count, comments) => (
     text: utils.shuffle(comments)
       .slice(0, utils.getRandomNumber(1, 3))
       .join(` `),
+    user: users[utils.getRandomNumber(0, users.length - 1)].email,
   }))
 );
 
@@ -39,7 +56,8 @@ const generateOffers = (count, mockData) => (
     title: mockData.titles[utils.getRandomNumber(0, mockData.titles.length - 1)],
     type: OfferType[Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)]],
     sum: utils.getRandomNumber(SumRestrict.min, SumRestrict.max),
-    comments: generateComments(utils.getRandomNumber(1, MAX_COMMENTS), mockData.comments)
+    comments: generateComments(utils.getRandomNumber(1, MAX_COMMENTS), mockData.comments),
+    user: users[utils.getRandomNumber(0, users.length - 1)].email,
   }))
 );
 
@@ -67,17 +85,35 @@ module.exports = {
     const offers = generateOffers(countOffer, mockData);
 
     try {
-      const {Category, Offer} = defineModels(sequelize);
-      await sequelize.sync({force: true});
+      const {Category, Offer, User} = defineModels(sequelize);
+      const result = await sequelize.sync({force: true});
+      logger.info(`Successfully created ${result.config.database} database`);
 
       const categoryModels = await Category.bulkCreate(
-          categories.map((item) => ({title: item}))
+          categories.map((item) => ({
+            title: item,
+            picture: `picture.png`,
+          }))
       );
 
       const categoryIdByName = categoryModels.reduce((acc, next) => ({
         [next.title]: next.id,
         ...acc
       }), {});
+
+      const userModels = await User.bulkCreate(users, {include: [Aliase.OFFERS, Aliase.COMMENTS]});
+
+      const userIdByEmail = userModels.reduce((acc, next) => ({
+        [next.email]: next.id,
+        ...acc
+      }), {});
+
+      offers.forEach((offer) => {
+        offer.userId = userIdByEmail[offer.user];
+        offer.comments.forEach((comment) => {
+          comment.userId = userIdByEmail[comment.user];
+        });
+      });
 
       const offerPromises = offers.map(async (offer) => {
         const offerModel = await Offer.create(offer, {include: [Aliase.COMMENTS]});
@@ -87,7 +123,11 @@ module.exports = {
             )
         );
       });
+
       await Promise.all(offerPromises);
+
+      logger.info(`Successfully filled ${result.config.database} database`);
+      sequelize.close();
     } catch (error) {
       logger.error(error);
     }
