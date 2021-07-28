@@ -71,5 +71,6 @@ module.exports = {
   getRandomNumber,
   ensureArray,
   getPictureFileName,
+  readContent,
   makeMockData
 };

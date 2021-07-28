@@ -21,18 +21,21 @@ const define = (sequelize) => {
     foreignKey: `offerId`
   });
 
-  OfferCategory.init({}, {sequelize});
+  OfferCategory.init({}, {
+    sequelize,
+    modelName: `offers_categories`,
+  });
 
   Offer.belongsToMany(Category, {
-    through: `offerCategories`,
+    through: `offers_categories`,
     as: Aliase.CATEGORIES
   });
   Category.belongsToMany(Offer, {
-    through: `offerCategories`,
+    through: `offers_categories`,
     as: Aliase.OFFERS
   });
   Category.hasMany(OfferCategory, {
-    as: Aliase.OFFER_CATEGORIES
+    as: Aliase.OFFERS_CATEGORIES
   });
 
   return {Category, Comment, Offer, OfferCategory};

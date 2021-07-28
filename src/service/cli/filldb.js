@@ -1,15 +1,16 @@
 'use strict';
 
 const fs = require(`fs`).promises;
-const {nanoid} = require(`nanoid`);
 
-const utils = require(`./../utils`);
+const sequelize = require(`../lib/sequelize`);
+const defineModels = require(`../models`);
+const Aliase = require(`../models/aliase`);
 const {getLogger} = require(`../lib/logger`);
+const utils = require(`../utils`);
 const {
   MAX_DATA_COUNT,
   ExitCode,
   TXT_FILES_DIR,
-  MAX_ID_LENGTH,
   MAX_COMMENTS,
   OfferType,
   SumRestrict,
@@ -17,13 +18,13 @@ const {
 } = require(`./../../constants`);
 
 const DEFAULT_COUNT = 1;
-const FILE_NAME = `mocks.json`;
+
+const logger = getLogger({name: `filldb`});
 
 const getPictureFileName = (number) => `item${number.toString().padStart(2, 0)}.jpg`;
 
 const generateComments = (count, comments) => (
   Array(count).fill({}).map(() => ({
-    id: nanoid(MAX_ID_LENGTH),
     text: utils.shuffle(comments)
       .slice(0, utils.getRandomNumber(1, 3))
       .join(` `),
@@ -32,7 +33,6 @@ const generateComments = (count, comments) => (
 
 const generateOffers = (count, mockData) => (
   Array(count).fill({}).map(() => ({
-    id: nanoid(MAX_ID_LENGTH),
     category: utils.shuffle(mockData.categories).slice(0, utils.getRandomNumber(1, mockData.categories.length - 1)),
     description: utils.shuffle(mockData.sentences).slice(1, 5).join(` `),
     picture: getPictureFileName(utils.getRandomNumber(PictureRestrict.min, PictureRestrict.max)),
@@ -43,11 +43,18 @@ const generateOffers = (count, mockData) => (
   }))
 );
 
-const logger = getLogger({name: `generate`});
-
 module.exports = {
-  name: `--generate`,
+  name: `--filldb`,
   async run(args) {
+    try {
+      logger.info(`Trying to connect to database...`);
+      await sequelize.authenticate();
+    } catch (err) {
+      logger.error(`An error occurred: ${err.message}`);
+      process.exit(1);
+    }
+    logger.info(`Connection to database established`);
+
     const [count] = args;
     if (count >= MAX_DATA_COUNT) {
       logger.error(`Не больше 1000 объявлений`);
@@ -56,14 +63,33 @@ module.exports = {
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
     const files = await fs.readdir(TXT_FILES_DIR);
     const mockData = await utils.makeMockData(files);
-    const content = JSON.stringify(generateOffers(countOffer, mockData), null, 2);
+    const categories = await utils.readContent(`categories`);
+    const offers = generateOffers(countOffer, mockData);
 
     try {
-      await fs.writeFile(FILE_NAME, content);
-      logger.info(`Operation success. File created.`);
+      const {Category, Offer} = defineModels(sequelize);
+      await sequelize.sync({force: true});
+
+      const categoryModels = await Category.bulkCreate(
+          categories.map((item) => ({title: item}))
+      );
+
+      const categoryIdByName = categoryModels.reduce((acc, next) => ({
+        [next.title]: next.id,
+        ...acc
+      }), {});
+
+      const offerPromises = offers.map(async (offer) => {
+        const offerModel = await Offer.create(offer, {include: [Aliase.COMMENTS]});
+        await offerModel.addCategories(
+            offer.category.map(
+                (title) => categoryIdByName[title]
+            )
+        );
+      });
+      await Promise.all(offerPromises);
     } catch (error) {
-      logger.error(`Can't write data to file...`);
-      process.exit(ExitCode.error);
+      logger.error(error);
     }
   }
 };
