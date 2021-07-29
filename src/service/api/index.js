@@ -5,7 +5,8 @@ const {Router} = require(`express`);
 const category = require(`./category`);
 const search = require(`./search`);
 const offer = require(`./offers`);
-const getMockData = require(`../lib/get-mock-data`);
+const sequelize = require(`../lib/sequelize`);
+const defineModels = require(`../models`);
 
 const {
   CategoryService,
@@ -14,14 +15,14 @@ const {
   CommentService,
 } = require(`../data-service`);
 
+defineModels(sequelize);
+
 const createApi = async () => {
   const agregatingRouter = new Router();
 
-  const mockData = await getMockData();
-
-  category(agregatingRouter, new CategoryService(mockData));
-  offer(agregatingRouter, new OfferService(mockData), new CommentService());
-  search(agregatingRouter, new SearchService(mockData));
+  category(agregatingRouter, new CategoryService(sequelize));
+  offer(agregatingRouter, new OfferService(sequelize), new CommentService(sequelize));
+  search(agregatingRouter, new SearchService(sequelize));
 
   return agregatingRouter;
 };
