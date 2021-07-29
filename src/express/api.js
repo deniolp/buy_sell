@@ -42,6 +42,13 @@ class API {
       data
     });
   }
+
+  editOffer(id, data) {
+    return this._load(`/offers/${id}`, {
+      method: `PUT`,
+      data
+    });
+  }
 }
 
 const defaultAPI = new API(defaultUrl, TIMEOUT);

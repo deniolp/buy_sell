@@ -43,7 +43,7 @@ offersRouter.get(`/edit/:id`, async (req, res) => {
     api.getOffer(id),
     api.getCategories()
   ]);
-  res.render(`offer-edit`, {offer, categories});
+  res.render(`offer-edit`, {offer, categories, id});
 });
 
 offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
@@ -59,6 +59,26 @@ offersRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
 
   try {
     await api.createOffer(offerData);
+    res.redirect(`/my`);
+  } catch (err) {
+    logger.error(err);
+    res.redirect(`back`);
+  }
+});
+
+offersRouter.post(`/edit/:id`, upload.single(`avatar`), async (req, res) => {
+  const {body, file} = req;
+  const {id} = req.params;
+  const offerData = {
+    picture: file ? file.filename : body[`old-image`],
+    sum: body.price,
+    type: body.action,
+    description: body.description,
+    title: body[`title`],
+    categories: ensureArray(body.categories),
+  };
+  try {
+    await api.editOffer(id, offerData);
     res.redirect(`/my`);
   } catch (err) {
     logger.error(err);

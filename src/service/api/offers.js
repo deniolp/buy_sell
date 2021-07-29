@@ -45,21 +45,15 @@ module.exports = (app, service, commentService) => {
 
   router.put(`/:offerId`, offerValidator, async (req, res) => {
     const {offerId} = req.params;
-    const existOffer = await service.findOne(offerId);
-
-    if (!existOffer) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found with ${offerId}`);
-    }
 
     const isOfferUpdated = await service.update(offerId, req.body);
 
     if (!isOfferUpdated) {
-      return res.status(HttpCode.INTERNAL_SERVER_ERROR)
-        .send(`Offer not update`);
+      return res.status(HttpCode.NOT_FOUND)
+        .send(`Not found with ${offerId}`);
     }
 
-    return res.status(HttpCode.OK);
+    return res.status(HttpCode.OK).send(`Updated`);
   });
 
   router.delete(`/:offerId`, async (req, res) => {

@@ -1,6 +1,11 @@
 'use strict';
 
+const {Op} = require(`sequelize`);
+
 const Aliase = require(`../models/aliase`);
+const {getLogger} = require(`../lib/logger`);
+
+const logger = getLogger({name: `data-service-offer`});
 
 class OfferService {
   constructor(sequelize) {
@@ -36,10 +41,24 @@ class OfferService {
   }
 
   async update(id, offer) {
-    const [affectedRows] = await this._Offer.update(offer, {
-      where: {id}
-    });
-    return !!affectedRows;
+    try {
+      const [affectedRows] = await this._Offer.update(offer, {
+        where: {id},
+      });
+      const offerCategories = await this._Category.findAll({
+        where: {
+          id: {
+            [Op.or]: offer.categories,
+          },
+        }
+      });
+      const updatedOffer = await this._Offer.findByPk(id);
+      await updatedOffer.setCategories(offerCategories);
+
+      return !!affectedRows;
+    } catch (error) {
+      return logger.error(error);
+    }
   }
 
 }
