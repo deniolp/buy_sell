@@ -8,7 +8,7 @@ const mainRouter = new Router();
 const api = getAPI();
 
 mainRouter.get(`/`, async (req, res) => {
-  const offers = await api.getOffers();
+  const offers = await api.getOffers({comments: false});
   res.render(`main`, {offers});
 });
 mainRouter.get(`/register`, (req, res) => {

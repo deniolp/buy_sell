@@ -13,8 +13,9 @@ module.exports = (app, service, commentService) => {
   app.use(`/offers`, router);
 
   router.get(`/`, async (req, res) => {
+    const {comments} = req.query;
     try {
-      const offers = await service.findAll();
+      const offers = await service.findAll(comments);
       res.status(HttpCode.OK)
       .json(offers);
     } catch (err) {
@@ -22,9 +23,9 @@ module.exports = (app, service, commentService) => {
     }
   });
 
-  router.get(`/:offerId`, (req, res) => {
+  router.get(`/:offerId`, async (req, res) => {
     const {offerId} = req.params;
-    const offer = service.findOne(offerId);
+    const offer = await service.findOne(offerId);
 
     if (!offer) {
       return res.status(HttpCode.NOT_FOUND)
@@ -35,66 +36,67 @@ module.exports = (app, service, commentService) => {
         .json(offer);
   });
 
-  router.post(`/`, offerValidator, (req, res) => {
-    const offer = service.create(req.body);
+  router.post(`/`, offerValidator, async (req, res) => {
+    const offer = await service.create(req.body);
 
     return res.status(HttpCode.CREATED)
       .json(offer);
   });
 
-  router.put(`/:offerId`, offerValidator, (req, res) => {
+  router.put(`/:offerId`, offerValidator, async (req, res) => {
     const {offerId} = req.params;
-    const existOffer = service.findOne(offerId);
+    const existOffer = await service.findOne(offerId);
 
     if (!existOffer) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Not found with ${offerId}`);
     }
 
-    const updatedOffer = service.update(offerId, req.body);
+    const isOfferUpdated = await service.update(offerId, req.body);
 
-    return res.status(HttpCode.OK)
-      .json(updatedOffer);
+    if (!isOfferUpdated) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR)
+        .send(`Offer not update`);
+    }
+
+    return res.status(HttpCode.OK);
   });
 
-  router.delete(`/:offerId`, (req, res) => {
+  router.delete(`/:offerId`, async (req, res) => {
     const {offerId} = req.params;
-    const offer = service.drop(offerId);
+    const isOfferDeleted = await service.drop(offerId);
 
-    if (!offer) {
+    if (!isOfferDeleted) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Offer not found`);
     }
 
-    return res.status(HttpCode.OK)
-      .json(offer);
+    return res.status(HttpCode.OK);
   });
 
-  router.get(`/:offerId/comments`, offerExist(service), (req, res) => {
+  router.get(`/:offerId/comments`, offerExist(service), async (req, res) => {
     const {offer} = res.locals;
-    const comments = commentService.findAll(offer);
+    const comments = await commentService.findAll(offer.id);
 
     res.status(HttpCode.OK)
       .json(comments);
   });
 
-  router.delete(`/:offerId/comments/:commentId`, offerExist(service), (req, res) => {
-    const {offer} = res.locals;
+  router.delete(`/:offerId/comments/:commentId`, offerExist(service), async (req, res) => {
     const {commentId} = req.params;
-    const deletedComment = commentService.drop(offer, commentId);
+    const isCommentDeleted = await commentService.drop(commentId);
 
-    if (!deletedComment) {
+    if (!isCommentDeleted) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Comment not found`);
     }
 
-    return res.status(HttpCode.OK)
-      .json(deletedComment);
+    return res.status(HttpCode.OK);
   });
 
-  router.post(`/:offerId/comments`, [offerExist(service), commentValidator], (req, res) => {
+  router.post(`/:offerId/comments`, [offerExist(service), commentValidator], async (req, res) => {
     const {offer} = res.locals;
-    const comment = commentService.create(offer, req.body);
+    const comment = await commentService.create(offer.id, req.body);
 
     return res.status(HttpCode.CREATED)
       .json(comment);
