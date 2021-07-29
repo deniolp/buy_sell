@@ -10,7 +10,7 @@ const {HttpCode} = require(`../../constants`);
 const mockData = [
   {
     "id": `ToUQpJ`,
-    "category": [
+    "categories": [
       `Книги`
     ],
     "description": `Пользовались бережно и только по большим праздникам. Кажется, что это хрупкая вещь. Не пытайтесь торговаться. Цену вещам я знаю. Мой дед не мог её сломать.`,
@@ -35,7 +35,7 @@ const mockData = [
   },
   {
     "id": `VvUFj4`,
-    "category": [
+    "categories": [
       `Игры`,
       `Посуда`,
       `Книги`,
@@ -63,7 +63,7 @@ const mockData = [
   },
   {
     "id": `Jv27n1`,
-    "category": [
+    "categories": [
       `Журналы`,
       `Разное`,
       `Посуда`,

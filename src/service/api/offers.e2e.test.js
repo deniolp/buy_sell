@@ -11,7 +11,7 @@ const {HttpCode} = require(`../../constants`);
 const mockData = [
   {
     "id": `A62j9X`,
-    "category": [
+    "categories": [
       `Игры`,
       `Животные`,
       `Посуда`,
@@ -31,7 +31,7 @@ const mockData = [
   },
   {
     "id": `imDtZx`,
-    "category": [
+    "categories": [
       `Посуда`,
       `Игры`,
       `Книги`
@@ -62,7 +62,7 @@ const mockData = [
   },
   {
     "id": `QUgAUL`,
-    "category": [
+    "categories": [
       `Игры`,
       `Посуда`,
       `Книги`,
@@ -130,7 +130,7 @@ describe(`API returns an offer with given id`, () => {
 
 describe(`API creates an offer if data is valid`, () => {
   const newOffer = {
-    category: `Котики`,
+    categories: `Котики`,
     title: `Дам погладить котика`,
     description: `Дам погладить котика. Дорого. Не гербалайф`,
     picture: `cat.jpg`,
@@ -159,7 +159,7 @@ describe(`API creates an offer if data is valid`, () => {
 
 describe(`API refuses to create an offer if data is invalid`, () => {
   const newOffer = {
-    category: `Котики`,
+    categories: `Котики`,
     title: `Дам погладить котика`,
     description: `Дам погладить котика. Дорого. Не гербалайф`,
     picture: `cat.jpg`,
@@ -182,7 +182,7 @@ describe(`API refuses to create an offer if data is invalid`, () => {
 
 describe(`API changes existent offer`, () => {
   const newOffer = {
-    category: `Котики`,
+    categories: `Котики`,
     title: `Дам погладить котика`,
     description: `Дам погладить котика. Дорого. Не гербалайф`,
     picture: `cat.jpg`,
@@ -212,7 +212,7 @@ test(`API returns status code 404 when trying to change non-existent offer`, () 
   const app = createAPI();
 
   const validOffer = {
-    category: `Это`,
+    categories: `Это`,
     title: `валидный`,
     description: `объект`,
     picture: `объявления`,
@@ -230,7 +230,7 @@ test(`API returns status code 400 when trying to change an offer with invalid da
   const app = createAPI();
 
   const invalidOffer = {
-    category: `Это`,
+    categories: `Это`,
     title: `невалидный`,
     description: `объект`,
     picture: `объявления`,

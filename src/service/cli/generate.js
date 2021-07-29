@@ -33,7 +33,7 @@ const generateComments = (count, comments) => (
 const generateOffers = (count, mockData) => (
   Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
-    category: utils.shuffle(mockData.categories).slice(0, utils.getRandomNumber(1, mockData.categories.length - 1)),
+    categories: utils.shuffle(mockData.categories).slice(0, utils.getRandomNumber(1, mockData.categories.length - 1)),
     description: utils.shuffle(mockData.sentences).slice(1, 5).join(` `),
     picture: getPictureFileName(utils.getRandomNumber(PictureRestrict.min, PictureRestrict.max)),
     title: mockData.titles[utils.getRandomNumber(0, mockData.titles.length - 1)],
