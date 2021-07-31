@@ -25,7 +25,8 @@ module.exports = (app, service, commentService) => {
 
   router.get(`/:offerId`, async (req, res) => {
     const {offerId} = req.params;
-    const offer = await service.findOne(offerId);
+    const {comments} = req.query;
+    const offer = await service.findOne(offerId, comments);
 
     if (!offer) {
       return res.status(HttpCode.NOT_FOUND)

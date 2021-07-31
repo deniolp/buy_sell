@@ -31,12 +31,17 @@ offersRouter.get(`/add`, async (req, res) => {
   const categories = await api.getCategories();
   res.render(`new-offer`, {categories});
 });
-offersRouter.get(`/:id`, (req, res) => {
-  res.render(`offer`, {});
+
+offersRouter.get(`/:id`, async (req, res) => {
+  const {id} = req.params;
+  const offer = await api.getOffer(id, true);
+  res.render(`offer`, {offer});
 });
+
 offersRouter.get(`/category/:id`, (req, res) => {
   res.render(`category`, {});
 });
+
 offersRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
   const [offer, categories] = await Promise.all([
