@@ -2,16 +2,42 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
 const search = require(`./search`);
 const DataService = require(`../data-service/search`);
 const {HttpCode} = require(`../../constants`);
+const initDB = require(`../lib/init-db`);
 
-const mockData = [
+const mockUsers = [
   {
-    "id": `ToUQpJ`,
+    firstName: `Иван`,
+    lastName: `Иванов`,
+    email: `arteta@gmail.com`,
+    password: `qwertyss`,
+    avatar: `image.jpg`,
+  },
+  {
+    firstName: `Сергей`,
+    lastName: `Сидоров`,
+    email: `barguzin@gmail.com`,
+    password: `qwertyss`,
+    avatar: `image2.jpg`,
+  }
+];
+
+const mockCategories = [
+  `Книги`,
+  `Цветы`,
+  `Животные`,
+  `Разное`
+];
+
+const mockOffers = [
+  {
     "categories": [
-      `Книги`
+      `Книги`,
+      `Разное`
     ],
     "description": `Пользовались бережно и только по большим праздникам. Кажется, что это хрупкая вещь. Не пытайтесь торговаться. Цену вещам я знаю. Мой дед не мог её сломать.`,
     "picture": `item13.jpg`,
@@ -20,26 +46,20 @@ const mockData = [
     "sum": 56540,
     "comments": [
       {
-        "id": `7nb8Ht`,
         "text": `Оплата наличными или перевод на карту?`
       },
       {
-        "id": `xfUsFI`,
         "text": `Неплохо, но дорого.`
       },
       {
-        "id": `fYSG_h`,
         "text": `Оплата наличными или перевод на карту? Почему в таком ужасном состоянии?`
       }
     ]
   },
   {
-    "id": `VvUFj4`,
     "categories": [
-      `Игры`,
-      `Посуда`,
-      `Книги`,
-      `Журналы`
+      `Цветы`,
+      `Животные`,
     ],
     "description": `Не пытайтесь торговаться. Цену вещам я знаю. Мой дед не мог её сломать. Таких предложений больше нет! Кажется, что это хрупкая вещь.`,
     "picture": `item07.jpg`,
@@ -48,27 +68,19 @@ const mockData = [
     "sum": 7788,
     "comments": [
       {
-        "id": `Fl1Mh2`,
         "text": `Продаю в связи с переездом. Отрываю от сердца. Совсем немного...`
       },
       {
-        "id": `PWJwO7`,
         "text": `Продаю в связи с переездом. Отрываю от сердца. А сколько игр в комплекте?`
       },
       {
-        "id": `ijypsW`,
         "text": `А сколько игр в комплекте? Продаю в связи с переездом. Отрываю от сердца.`
       }
     ]
   },
   {
-    "id": `Jv27n1`,
     "categories": [
-      `Журналы`,
-      `Разное`,
-      `Посуда`,
-      `Книги`,
-      `Игры`
+      `Разное`
     ],
     "description": `Пользовались бережно и только по большим праздникам. Кажется, что это хрупкая вещь. Товар в отличном состоянии. Продаю с болью в сердце...`,
     "picture": `item14.jpg`,
@@ -77,28 +89,30 @@ const mockData = [
     "sum": 12926,
     "comments": [
       {
-        "id": `Ema1kp`,
         "text": `Вы что?! В магазине дешевле.`
       },
       {
-        "id": `EBnzQU`,
         "text": `Почему в таком ужасном состоянии? С чем связана продажа? Почему так дешёво? А сколько игр в комплекте?`
       },
       {
-        "id": `lCauQ1`,
         "text": `Почему в таком ужасном состоянии?`
       },
       {
-        "id": `WeXaN-`,
         "text": `Почему в таком ужасном состоянии? Неплохо, но дорого. Оплата наличными или перевод на карту?`
       }
     ]
   }
 ];
 
+const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
+
 const app = express();
 app.use(express.json());
-search(app, new DataService(mockData));
+
+beforeAll(async () => {
+  await initDB(mockDB, {categories: mockCategories, offers: mockOffers, users: mockUsers});
+  search(app, new DataService(mockDB));
+});
 
 describe(`API returns offer based on search query`, () => {
   let response;
@@ -123,7 +137,7 @@ describe(`API returns offer based on search query`, () => {
     }
   });
 
-  test(`Offer has correct id`, () => expect(response.body[0].id).toBe(`ToUQpJ`));
+  test(`Offer has correct title`, () => expect(response.body[0].title).toBe(`Продам советскую посуду. Почти не разбита`));
 });
 
 test(`API returns code 404 if nothing is found`,
