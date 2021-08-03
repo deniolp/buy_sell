@@ -66,12 +66,12 @@ module.exports = (app, service, commentService) => {
         .send(`Offer not found`);
     }
 
-    return res.status(HttpCode.OK);
+    return res.status(HttpCode.OK).send(`Deleted!`);
   });
 
   router.get(`/:offerId/comments`, offerExist(service), async (req, res) => {
-    const {offer} = res.locals;
-    const comments = await commentService.findAll(offer.id);
+    const {offerId} = req.params;
+    const comments = await commentService.findAll(offerId);
 
     res.status(HttpCode.OK)
       .json(comments);
@@ -86,12 +86,12 @@ module.exports = (app, service, commentService) => {
         .send(`Comment not found`);
     }
 
-    return res.status(HttpCode.OK);
+    return res.status(HttpCode.OK).send(`Deleted!`);
   });
 
   router.post(`/:offerId/comments`, [offerExist(service), commentValidator], async (req, res) => {
-    const {offer} = res.locals;
-    const comment = await commentService.create(offer.id, req.body);
+    const {offerId} = req.params;
+    const comment = await commentService.create(offerId, req.body);
 
     return res.status(HttpCode.CREATED)
       .json(comment);

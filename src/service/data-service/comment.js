@@ -7,21 +7,23 @@ class CommentService {
   }
 
   async create(offerId, comment) {
-    return this._Comment.create({
+    const newComment = await this._Comment.create({
       offerId,
       ...comment
     });
+
+    return newComment;
   }
 
-  drop(commentId) {
-    const deletedRow = this._Comment.destroy({
-      where: {commentId}
+  async drop(id) {
+    const deletedRow = await this._Comment.destroy({
+      where: {id}
     });
     return !!deletedRow;
   }
 
-  findAll(offerId) {
-    return this._Comment.findAll({
+  async findAll(offerId) {
+    return await this._Comment.findAll({
       where: {offerId},
       raw: true
     });
