@@ -6,8 +6,9 @@ const createApi = require(`../api`);
 const {getLogger} = require(`../lib/logger`);
 const sequelize = require(`../lib/sequelize`);
 const {HttpCode, ExitCode} = require(`../../constants`);
+const {API_PORT} = require(`../../../config`);
 
-const DEFAULT_PORT = 3000;
+const DEFAULT_PORT = API_PORT;
 
 const logger = getLogger({name: `api`});
 

@@ -49,7 +49,6 @@ module.exports = async (sequelize, {categories, offers, users}) => {
     await Promise.all(offerPromises);
 
     logger.info(`Successfully filled ${result.config.database} database`);
-    sequelize.close();
   } catch (error) {
     logger.error(error);
   }
