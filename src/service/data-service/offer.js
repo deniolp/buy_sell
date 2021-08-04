@@ -44,6 +44,16 @@ class OfferService {
     return await this._Offer.findByPk(id, {include});
   }
 
+  async findPage({limit, offset}) {
+    const {count, rows} = await this._Offer.findAndCountAll({
+      limit,
+      offset,
+      include: [Aliase.CATEGORIES],
+      distinct: true
+    });
+    return {count, offers: rows};
+  }
+
   async update(id, offer) {
     try {
       const [affectedRows] = await this._Offer.update(offer, {

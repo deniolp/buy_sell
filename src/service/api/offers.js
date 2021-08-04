@@ -13,11 +13,17 @@ module.exports = (app, service, commentService) => {
   app.use(`/offers`, router);
 
   router.get(`/`, async (req, res) => {
-    const {comments} = req.query;
+    const {offset, limit, comments} = req.query;
+    let result;
+
     try {
-      const offers = await service.findAll(comments);
-      res.status(HttpCode.OK)
-      .json(offers);
+      if (limit || offset) {
+        result = await service.findPage({limit, offset});
+      } else {
+        result = await service.findAll(comments);
+      }
+
+      res.status(HttpCode.OK).json(result);
     } catch (err) {
       res.status(HttpCode.INTERNAL_SERVER_ERROR).send(err);
     }
