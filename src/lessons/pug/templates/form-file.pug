@@ -1,0 +1,30 @@
+title= title
+style.
+  form {
+            display: flex;
+            justify-content: center;
+            flex-grow: 1;
+            flex-direction: column;
+            width: 500px;
+          }
+          label {
+            font-weight: bold;
+            margin-bottom: 2px;
+            display: block;
+          }
+          input {
+            border: 1px solid #ccc;
+            margin: 3px 0;
+            padding: 5px;
+          }
+          button {
+            width: 100px;
+            margin-top: 10px;
+          }
+h1= header
+form(action='/form' method='POST' enctype='multipart/form-data')
+  label(for='firstname') Имя:
+  input#firstname(name='firstname')
+  label(for='photo') Фотография:
+  input#photo(type='file' name='photo')
+  button(type='submit') Отправить

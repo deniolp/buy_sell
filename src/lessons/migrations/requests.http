@@ -1,0 +1,24 @@
+# Список users
+GET http://localhost:3000/users HTTP/1.1
+
+###
+
+# Добавление нового user
+
+POST http://localhost:3000/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "marak@gmail.com",
+  "password": "qwerty",
+  "phone": "+79136548765",
+  "name": "Гусь Хрустальный"
+}
+
+###
+
+# Удаление user с идентификатором :id
+
+DELETE http://localhost:3000/users/2 HTTP/1.1
+
+###

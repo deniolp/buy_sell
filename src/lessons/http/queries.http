@@ -1,0 +1,49 @@
+HEAD /posts HTTP/1.1
+Host: jsonplaceholder.typicode.com
+
+###
+
+GET /posts HTTP/1.1
+Host: jsonplaceholder.typicode.com
+
+###
+
+POST /posts HTTP/1.1
+Host: jsonplaceholder.typicode.com
+Content-Type: application/json
+Content-Length: 88
+
+{
+    "title": "Новая публикация",
+    "body": "Текст публикации",
+    "userId": 31337
+}
+
+###
+
+GET https://jsonplaceholder.typicode.com/comments?postId=1 HTTP/1.1
+Content-Type: application/json
+
+###
+
+GET http://localhost:3000/?company=HTMLAcademy&site=https://htmlacademy.ru HTTP/1.1
+
+###
+
+GET http://localhost:3000/?brands[]=apple&brands[]=lenovo&brands[]=asus HTTP/1.1
+
+###
+
+POST http://localhost:3000/company
+Content-Type: application/json
+
+{
+  "name": "HTML Academy",
+  "site": "https://htmlacademy.ru",
+  "instagram": "https://www.instagram.com/htmlacademy/",
+  "twitter": "https://twitter.com/htmlacademy_ru"
+}
+
+###
+
+http://localhost:3000/company/1
