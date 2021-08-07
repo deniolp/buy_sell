@@ -1,0 +1,10 @@
+html
+  head
+  body
+  form(action='/transfer' method='post')
+    label(for='amount') Количество рыбокойнов
+    input#amount(type='number' name='amount')
+    label(for='target-user') Получатель
+    input#target-user(type='text' name='target-user')
+    input(type='submit' value='Перевести рыбокойны')
+    input(type='hidden' name='_csrf' value=`${csrf}`)

